@@ -18,6 +18,8 @@ print("Le Scheduler est démarré")
 #------------------------------------------------------------------------------
 # Initalisation des methodes pour charger les plugins
 
+# plugin_folder = "%s\\plugins\\"%(os.path.dirname(os.path.abspath(__file__)))
+
 def load_plugin(name):
     mod = import_file(name)
     return mod
