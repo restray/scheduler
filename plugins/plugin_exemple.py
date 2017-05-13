@@ -6,16 +6,17 @@ def plugin_main(logs_dir):
     # Definition variables
     plugin_folder = "%s\\plugins\\exemple_plugin\\"%(os.path.dirname(os.path.abspath(__file__)))
     config_file = '%sconfig.txt'%(plugin_folder)
-    
+
     # Démarrage des services de logs
     Log_ex = log.Log("Plugin Exemple", logs_dir)
     Log_ex.append("Plugin loaded", "info")
     print("[exemple_plugin]start Plugin")
 
     # Check du service de config
-    print("dir plugin = " + plugin_folder )
+    # Vérification du dossier
     if not os.path.exists(plugin_folder):
         os.makedirs(plugin_folder)
+    # Vérification du fichier
     if not os.path.exists(config_file):
         start_pl = False
         print('No config file : plugin will not start.')
@@ -37,4 +38,3 @@ pass : 0123456789""")
             Log_ex.append("Task do with success", "info")
             print("coucou")
     schedule.every().minute.do(job)
-    

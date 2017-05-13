@@ -3,6 +3,10 @@ import time
 import os
 import sys
 from import_file import import_file
+from Tkinter import *
+from threading import Thread
+from string import printable
+from curses import erasechar, wrapper
 
 #Other importation
 
@@ -14,6 +18,8 @@ import log
 #------------------------------------------------------------------------------
 
 print("Le Scheduler est démarré")
+gui_active = False
+PRINTABLE = map(ord, printable)
 
 #------------------------------------------------------------------------------
 # Initalisation des methodes pour charger les plugins
@@ -29,37 +35,26 @@ def call_plugin(name):
         plugin = load_plugin(name)
         plugin.plugin_main(os.path.dirname(os.path.abspath(__file__)))
         log1.append("Plugin %s is load"%(files[0:length-3]), "info")
-    
+
     except:
         print("The plugin don\'t contain a plugin_main()")
         log1.append("Plugin %s isn't load : The plugin don\'t contain a plugin_main()"%(files[0:length-3]), "warning")
-        
 
 #------------------------------------------------------------------------------
-def job1():
-    try:
-        print("working ever 10 min")
-        log1.append('Task 1 run with success', 'Info')
-    except:
-        print("Task 1 error")
-        log1.append('Task 1 run with problem', 'Warning')
-        
+# Configuration des threads
 
-def job2():
-    try:
-        print("working every hours")
-        log1.append('Task 1 run with success', 'Info')
-    except:
-        print("Task 2 error")
-        log1.append('Task 1 run with problem', 'Warning')
+
 #------------------------------------------------------------------------------
+
+if len(sys.argv) >= 3:
+    if sys.argv[2] == "--gui" or sys.argv[2] == "gui":
+        pass
 
 if sys.argv[1] == "-h" or sys.argv[1] == "help":
     print("Pour faire tourner le serveur utiliser: run")
     print("Pour faire tourner une tâche particulière: run_task [task]")
 
 elif sys.argv[1] == "-r" or sys.argv[1] == "run":
-
     #---------------------------------------------------------------------------
     # Initialisation des logs
     log1 = log.Log("Schedule task", os.path.dirname(os.path.abspath(__file__)))
@@ -76,7 +71,7 @@ elif sys.argv[1] == "-r" or sys.argv[1] == "run":
             print("Load %s"%(files[0:length-3]))
             log1.append("Start the plugin : %s"%(files[0:length-3]), "info")
             call_plugin(".\\plugins\\%s"%(files))
-    
+
     try :
         while 1:
             schedule.run_pending()
@@ -84,5 +79,3 @@ elif sys.argv[1] == "-r" or sys.argv[1] == "run":
 
     finally :
         log1.close()
-
-
