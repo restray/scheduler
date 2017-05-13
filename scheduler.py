@@ -35,20 +35,17 @@ def call_plugin(name):
         plugin = load_plugin(name)
         plugin.plugin_main(os.path.dirname(os.path.abspath(__file__)))
         log1.append("Plugin %s is load"%(files[0:length-3]), "info")
-
+        return True
     except:
         print("The plugin don\'t contain a plugin_main()")
         log1.append("Plugin %s isn't load : The plugin don\'t contain a plugin_main()"%(files[0:length-3]), "warning")
+        return False
 
 #------------------------------------------------------------------------------
-# Configuration des threads
+# Configuration des jobs
 
 
 #------------------------------------------------------------------------------
-
-if len(sys.argv) >= 3:
-    if sys.argv[2] == "--gui" or sys.argv[2] == "gui":
-        pass
 
 if sys.argv[1] == "-h" or sys.argv[1] == "help":
     print("Pour faire tourner le serveur utiliser: run")
@@ -68,9 +65,14 @@ elif sys.argv[1] == "-r" or sys.argv[1] == "run":
         length = len(files)
         check_py_file = files[length-3:length]
         if check_py_file == ".py":
+            gui_interface = open("%s\\libraries\\gui_interface.txt"%(os.path.dirname(os.path.abspath(__file__))), "w")
             print("Load %s"%(files[0:length-3]))
             log1.append("Start the plugin : %s"%(files[0:length-3]), "info")
-            call_plugin(".\\plugins\\%s"%(files))
+            if call_plugin(".\\plugins\\%s"%(files)):
+                gui_interface.write("%s: True"%(files[0:length-3]))
+            else:
+                gui_interface.write("%s: False"%(files[0:length-3]))
+            gui_interface.close()
 
     try :
         while 1:
