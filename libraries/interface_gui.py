@@ -31,5 +31,3 @@ class interface:
         remove(self.gui_interface)
         #Move new file
         move(self.abs_path, self.gui_interface)
-    def close(self):
-        self.file_interface.close()

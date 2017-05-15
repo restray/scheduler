@@ -33,15 +33,21 @@ def load_plugin(name):
     return mod
 
 def call_plugin(name):
-    try:
+    if "debug" in sys.argv:
         plugin = load_plugin(name)
         plugin.plugin_main(os.path.dirname(os.path.abspath(__file__)), interface)
         log1.append("Plugin %s is load"%(files[0:length-3]), "info")
         return True
-    except:
-        print("The plugin don\'t contain a plugin_main()")
-        log1.append("Plugin %s isn't load : The plugin don\'t contain a plugin_main()"%(files[0:length-3]), "warning")
-        return False
+    else:
+        try:
+            plugin = load_plugin(name)
+            plugin.plugin_main(os.path.dirname(os.path.abspath(__file__)), interface)
+            log1.append("Plugin %s is load"%(files[0:length-3]), "info")
+            return True
+        except:
+            print("The plugin don\'t contain a plugin_main()")
+            log1.append("Plugin %s isn't load : The plugin don\'t contain a plugin_main()"%(files[0:length-3]), "warning")
+            return False
 
 #------------------------------------------------------------------------------
 # Configuration des jobs
@@ -110,4 +116,3 @@ elif sys.argv[1] == "-r" or sys.argv[1] == "run":
 
     finally :
         log1.close()
-        interface.close()
