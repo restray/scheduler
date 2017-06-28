@@ -1,1 +1,4 @@
-plugin_exemple: True
+# Interface File DON'T TOUCH
+plugin_exemple : True
+server_exemple : starting : starting : stop : stop : start : starting : start : starting : starting : start : stop : stop
+server_minecraft : stop

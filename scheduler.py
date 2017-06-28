@@ -8,13 +8,17 @@ from threading import Thread
 from string import printable
 from curses import erasechar, wrapper
 
-#Other importation
+# Environnement Variable
+plugin_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plugins")
+libraries_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries")
 
-sys.path.insert(0, "%s\\plugins\\"%(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, "%s\\libraries\\"%(os.path.dirname(os.path.abspath(__file__))))
+#Other importation
+sys.path.insert(0, plugin_path)
+sys.path.insert(0, libraries_path)
 
 import log
 import interface_gui
+import configuration
 
 #------------------------------------------------------------------------------
 
@@ -24,9 +28,7 @@ gui_active = False
 #------------------------------------------------------------------------------
 # Initalisation des methodes pour charger les plugins
 
-# plugin_folder = "%s\\plugins\\"%(os.path.dirname(os.path.abspath(__file__)))
-
-interface = interface_gui.interface("%s\\libraries\\gui_interface.txt"%(os.path.dirname(os.path.abspath(__file__))), "%s\\libraries\\gui_interface_tmp.txt"%(os.path.dirname(os.path.abspath(__file__))))
+interface = interface_gui.interface(os.path.join(libraries_path, "gui_interface.txt"), os.path.join(libraries_path, "gui_interface_tmp.txt"))
 
 def load_plugin(name):
     mod = import_file(name)

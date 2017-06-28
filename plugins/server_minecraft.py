@@ -1,4 +1,11 @@
-﻿import log
+# coding: utf8
+
+import rcon_mc.rcon
+import rcon_mc.lib.msocket
+
+import socket;
+
+import log
 import interface_gui
 import schedule
 import os
@@ -10,14 +17,14 @@ import configuration
 class plugin_main:
     def __init__(self, logs_dir, interface):
         # Definition variables
-        self.plugin_folder = "%s\\plugins\\server_exemple\\"%(os.path.dirname(os.path.abspath(__file__)))
+        self.plugin_folder = "%s\\plugins\\server_minecraft\\"%(os.path.dirname(os.path.abspath(__file__)))
         self.config_file = '%sconfig.txt'%(self.plugin_folder)
         # Démarrage des services de logs
-        self.Log_ex = log.Log("Server Exemple", logs_dir)
+        self.Log_ex = log.Log("Server Minecraft", logs_dir)
         self.Log_ex.append("Plugin loaded", "info")
-        print("[server_exemple]start Plugin")
+        print("[server_Minecraft]start Plugin")
 
-        self.configuration = configuration.Config("%s\\plugins\\"%(os.path.dirname(os.path.abspath(__file__))), "server_exemple")
+        self.configuration = configuration.Config("%s\\plugins\\"%(os.path.dirname(os.path.abspath(__file__))), "server_minecraft")
         self.interface = interface
 
         # Check du service de config
@@ -50,25 +57,34 @@ class plugin_main:
         else:
             self.start_pl = True
             self.ip_port = "%s:%s"%(self.configuration.read_value()['ip'], self.configuration.read_value()['port'])
-            print("[server_exemple] Config file, plugin launch")
-            print("[server_exemple] Start the server on : %s"%(self.ip_port))
+            print("[server_Minecraft] Config file, plugin launch")
+            print("[server_Minecraft] Start the plugin with the server on : %s"%(self.ip_port))
             self.Log_ex.append("Config file found", "info")
 
-        schedule.every().minute.do(self.job_server_exemple)
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.result = self.sock.connect_ex((self.configuration.read_value()['ip'], int(self.configuration.read_value()['port'])))
+
+            if self.result == 0:
+                self.start_pl = True
+                print("[server_Minecraft]Your server is ok...")
+            else:
+                self.start_pl = False
+                print("[server_Minecraft]Your server is broken or the port is not open...")
+        schedule.every().minute.do(self.job_server_minecraft)
 
     # Create schedule task
-    def job_server_exemple(self):
-        #Generate a random key for exemple
-        self.Stat_server = randint(0, 2)
-
+    def job_server_minecraft(self):
         #Check if the plugin run if the plugin had already a config.txt at the wake up
         if self.start_pl:
-            if self.Stat_server==0:
-                self.Stat_server="starting"
-            elif self.Stat_server==1:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.result = self.sock.connect_ex((self.configuration.read_value()['ip'], int(self.configuration.read_value()['port'])))
+            if self.result == 0:
                 self.Stat_server="start"
-            elif self.Stat_server==2:
+                client=rcon_mc.rcon.client(self.configuration.read_value()['ip'], int(self.configuration.read_value()['port']), self.configuration.read_value()['pass'])
+                response=client.send("/msg restray message envoyé depuis le scheduler !")
+                print response
+            else:
                 self.Stat_server="stop"
-            self.interface.change_value("server_exemple", "server_exemple : %s"%(self.Stat_server))
+                print('[Server Minecraft]Your server is stopped...')
+            self.interface.change_value("server_minecraft", "server_minecraft : %s"%(self.Stat_server))
             self.Log_ex.append("Task do with success", "info")
-            print("Restart server exemple")

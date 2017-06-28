@@ -2,13 +2,15 @@ from flask import Flask
 from flask import render_template
 import os
 
+interface_gui = os.path.join(os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries"), "gui_interface.txt")
+
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
     entries = {}
     servers = {}
-    for task in open("%s\\libraries\\gui_interface.txt"%(os.path.dirname(os.path.abspath(__file__)))):
+    for task in open(interface_gui):
         if ":" in task:
             if "server" in task:
                 tasked = task.split(":")
