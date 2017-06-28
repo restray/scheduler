@@ -2,7 +2,7 @@
 import schedule
 import os
 
-def plugin_main(logs_dir):
+def plugin_main(logs_dir, interface_file):
     # Definition variables
     plugin_folder = "%s\\plugins\\exemple_plugin\\"%(os.path.dirname(os.path.abspath(__file__)))
     config_file = '%sconfig.txt'%(plugin_folder)

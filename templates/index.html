@@ -3,21 +3,58 @@
     <meta charset="utf-8" />
     <title>All task</title>
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body>
-    <h1>Tasks</h1>
-
-    <div class="component">
+    <ul class="nav nav-tabs">
+      <li role="presentation" class="active" id="tasks"><a href="#" onclick="showTasks()">Tasks</a></li>
+      <li role="presentation" class="server" id="servers"><a href="#" onclick="showServers()">Servers</a></li>
+    </ul>
+    <div class="component" id="component">
+        <h1>Tasks</h1>
         {% for key, value in entries.items() %}
             <div class="{% if 'Work' in value %}postit3green{% else %}postit3red{% endif %}">
                 <p>Status of {{key}}<br /> {{value}}</p>
             </div>
         {% endfor %}
     </div>
+    <div class="server" id="server_component">
+        <h1>Servers</h1>
+        <ul>
+            {% for server, status in servers.items() %}
+                <li>{{server}} : {{status}}</li>
+            {% endfor %}
+        </ul>
+    </div>
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+function showServers() {
+    $("#tasks").attr("class", "unactive");
+    $("#servers").attr("class", "active");
+    document.getElementById('component').style.display='none';
+    document.getElementById('server_component').style.display='block';
+}
+function showTasks() {
+    $("#tasks").attr("class", "active");
+    $("#servers").attr("class", "unactive");
+    document.getElementById('component').style.display='block';
+    document.getElementById('server_component').style.display='none';
+}
+</script>
+
 <style>
+#component{
+    display: block;
+}
+#server_component{
+    display: none;
+}
+
 body{
     font-family: 'Open Sans', sans-serif;
+    margin-left: 10px;
 }
 .rondvert{
     background-color: green;
@@ -52,17 +89,17 @@ body{
     border-radius: 5px;
 }
 .postit3green:before {
-content : "";
-width: 0;
-height: 0;
-border-color: blue white #27ae60 red;
-border-style: solid;
-border-width: 0 30px 30px 0;
-background: green;
-position : absolute;
-top : 0;
-right : 0;
-border-radius : 0 0 0 5px;
+    content : "";
+    width: 0;
+    height: 0;
+    border-color: blue white #27ae60 red;
+    border-style: solid;
+    border-width: 0 30px 30px 0;
+    background: green;
+    position : absolute;
+    top : 0;
+    right : 0;
+    border-radius : 0 0 0 5px;
 }
 .postit3red{
     display: inline-block;
@@ -73,17 +110,17 @@ border-radius : 0 0 0 5px;
     border-radius: 5px;
 }
 .postit3red:before {
-content : "";
-width: 0;
-height: 0;
-border-color: blue white #c0392b red;
-border-style: solid;
-border-width: 0 30px 30px 0;
-background: green;
-position : absolute;
-top : 0;
-right : 0;
-border-radius : 0 0 0 5px;
+    content : "";
+    width: 0;
+    height: 0;
+    border-color: blue white #c0392b red;
+    border-style: solid;
+    border-width: 0 30px 30px 0;
+    background: green;
+    position : absolute;
+    top : 0;
+    right : 0;
+    border-radius : 0 0 0 5px;
 }
 </style>
 </html>

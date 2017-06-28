@@ -1,0 +1,6 @@
+#Configuration file for the project server_exemple !
+# Server name don't contain any whitespace !
+server_name: exemple
+ip: 0.0.0.0
+port: 1234
+pass: 0123456789

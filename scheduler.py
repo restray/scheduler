@@ -8,38 +8,48 @@ from threading import Thread
 from string import printable
 from curses import erasechar, wrapper
 
-#Other importation
+# Environnement Variable
+plugin_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "plugins")
+libraries_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "libraries")
 
-sys.path.insert(0, "%s\\plugins\\"%(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, "%s\\libraries\\"%(os.path.dirname(os.path.abspath(__file__))))
+#Other importation
+sys.path.insert(0, plugin_path)
+sys.path.insert(0, libraries_path)
 
 import log
+import interface_gui
+import configuration
 
 #------------------------------------------------------------------------------
 
 print("Le Scheduler est démarré")
 gui_active = False
-PRINTABLE = map(ord, printable)
 
 #------------------------------------------------------------------------------
 # Initalisation des methodes pour charger les plugins
 
-# plugin_folder = "%s\\plugins\\"%(os.path.dirname(os.path.abspath(__file__)))
+interface = interface_gui.interface(os.path.join(libraries_path, "gui_interface.txt"), os.path.join(libraries_path, "gui_interface_tmp.txt"))
 
 def load_plugin(name):
     mod = import_file(name)
     return mod
 
 def call_plugin(name):
-    try:
+    if "debug" in sys.argv:
         plugin = load_plugin(name)
-        plugin.plugin_main(os.path.dirname(os.path.abspath(__file__)))
+        plugin.plugin_main(os.path.dirname(os.path.abspath(__file__)), interface)
         log1.append("Plugin %s is load"%(files[0:length-3]), "info")
         return True
-    except:
-        print("The plugin don\'t contain a plugin_main()")
-        log1.append("Plugin %s isn't load : The plugin don\'t contain a plugin_main()"%(files[0:length-3]), "warning")
-        return False
+    else:
+        try:
+            plugin = load_plugin(name)
+            plugin.plugin_main(os.path.dirname(os.path.abspath(__file__)), interface)
+            log1.append("Plugin %s is load"%(files[0:length-3]), "info")
+            return True
+        except:
+            print("The plugin don\'t contain a plugin_main()")
+            log1.append("Plugin %s isn't load : The plugin don\'t contain a plugin_main()"%(files[0:length-3]), "warning")
+            return False
 
 #------------------------------------------------------------------------------
 # Configuration des jobs
@@ -59,20 +69,47 @@ elif sys.argv[1] == "-r" or sys.argv[1] == "run":
     log1.write("Start task", "Info")
     #---------------------------------------------------------------------------
     # Chargement des plugins
-
+    interface.write("# Interface File DON\'T TOUCH\n")
     for files in os.listdir(".\\plugins\\"):
         #Check if the file is a python file
         length = len(files)
         check_py_file = files[length-3:length]
         if check_py_file == ".py":
-            gui_interface = open("%s\\libraries\\gui_interface.txt"%(os.path.dirname(os.path.abspath(__file__))), "w")
             print("Load %s"%(files[0:length-3]))
             log1.append("Start the plugin : %s"%(files[0:length-3]), "info")
-            if call_plugin(".\\plugins\\%s"%(files)):
-                gui_interface.write("%s: True"%(files[0:length-3]))
+            name_file = files[0:length-3]
+            """if "server" in files[0:length-3]:
+                call_plugin(".\\plugins\\%s"%(files))
+                ran = randint(0,2)
+                # Test status for the gui
+                if ran == 0:
+                    for line in config:
+                        if "status" in line:
+                            conf += "status: stop"
+                        else:
+                            conf += line
+                    modify_config.write(conf)
+                if ran == 1:
+                    for line in config:
+                        if "status" in line:
+                            conf += "status: inprogress"
+                        else:
+                            conf += line
+                    modify_config.write(conf)
+                if ran == 2:
+                    for line in config:
+                        if "status" in line:
+                            conf += "status: start"
+                        else:
+                            conf += line
+                    modify_config.write(conf)"""
+            if "server" in name_file:
+                call_plugin(".\\plugins\\%s"%(files))
+                interface.append("%s : stop\n"%(name_file))
+            elif call_plugin(".\\plugins\\%s"%(files)):
+                interface.append("%s : True\n"%(name_file))
             else:
-                gui_interface.write("%s: False"%(files[0:length-3]))
-            gui_interface.close()
+                interface.append("%s : False\n"%(name_file))
 
     try :
         while 1:
